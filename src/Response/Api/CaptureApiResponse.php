@@ -1,0 +1,26 @@
+<?php
+namespace Bambora\Response\Api;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class CaptureApiResponse extends BaseApiResponse
+{
+    /**
+     * @inheritdoc
+     */
+    public static function getFieldValidationRules() : array
+    {
+        return [
+            'transactionoperations' => new Assert\All([
+                'constraints' => [
+                    new Assert\Collection([
+                        'id' => [
+                            new Assert\NotBlank(),
+                            new Assert\Type("numeric"),
+                        ]
+                    ])
+                ]
+            ]),
+        ];
+    }
+}
