@@ -4,6 +4,7 @@ namespace Bambora\Response;
 use Bambora\Exception\BamboraException;
 use Bambora\Exception\InvalidResponseStructureException;
 use Bambora\Response\Api\BaseApiResponse;
+use Bambora\Response\Callback\AuthorizeTransactionCallbackResponse;
 use Bambora\Response\Callback\BaseCallbackResponse;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
@@ -38,6 +39,18 @@ class ResponseFactory
         }
 
         return new $class($metaInfo, $responseData);
+    }
+
+    /**
+     * @param array $data
+     * @return AuthorizeTransactionCallbackResponse
+     */
+    public function createAuthorizeTransactionCallbackResponse(array $data) : AuthorizeTransactionCallbackResponse
+    {
+        /** @var AuthorizeTransactionCallbackResponse $response */
+        $response = $this->createCallbackResponse($data, AuthorizeTransactionCallbackResponse::class);
+
+        return $response;
     }
 
     /**
