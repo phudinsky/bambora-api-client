@@ -2,7 +2,6 @@
 namespace Bambora;
 
 use Bambora\Exception\BamboraRequestException;
-use Bambora\Response\ResponseStructureValidator;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client as HttpClient;
 use Bambora\Request\AuthorizeTransactionRequest;
