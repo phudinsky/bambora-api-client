@@ -3,7 +3,7 @@ namespace Bambora\Response\Api;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class DeleteApiResponse extends BaseApiResponse
+class CaptureTransactionApiResponse extends BaseApiResponse
 {
     /**
      * @inheritdoc

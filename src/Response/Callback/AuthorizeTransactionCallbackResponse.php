@@ -3,7 +3,7 @@ namespace Bambora\Response\Callback;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AuthorizeCallbackResponse extends BaseCallbackResponse
+class AuthorizeTransactionCallbackResponse extends BaseCallbackResponse
 {
     /**
      * @inheritdoc
