@@ -6,7 +6,7 @@ use Bambora\Request\CheckoutUrlRequest\Subscription;
 use Bambora\Request\CheckoutUrlRequest\Url;
 use Bambora\BamboraEndpoints;
 
-class CheckoutUrlRequest extends BaseRequest
+class InitiateSessionsRequest extends BaseRequest
 {
     /** @var  string */
     private $language;
@@ -22,7 +22,7 @@ class CheckoutUrlRequest extends BaseRequest
 
     public function __construct()
     {
-        $this->meta = new RequestMetaInformation("POST", BamboraEndpoints::checkoutUrl());
+        $this->meta = new RequestMetaInformation("POST", BamboraEndpoints::initiateSession());
     }
 
     /**

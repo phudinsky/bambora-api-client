@@ -4,14 +4,14 @@ namespace Bambora\Request;
 use Bambora\BamboraEndpoints;
 use Bambora\Request\AuthorizeRequest\Authorize;
 
-class AuthorizeRequest extends BaseRequest
+class AuthorizeTransactionRequest extends BaseRequest
 {
     /** @var  Authorize */
     private $authorize;
 
     public function __construct(string $transactionId)
     {
-        $this->meta = new RequestMetaInformation("POST", BamboraEndpoints::authorize($transactionId));
+        $this->meta = new RequestMetaInformation("POST", BamboraEndpoints::authorizeTransaction($transactionId));
     }
 
     /**

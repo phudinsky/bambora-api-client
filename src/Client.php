@@ -4,11 +4,11 @@ namespace Bambora;
 use Bambora\Exception\BamboraRequestException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client as HttpClient;
-use Bambora\Request\AuthorizeRequest;
+use Bambora\Request\AuthorizeTransactionRequest;
 use Bambora\Request\BaseRequest;
-use Bambora\Request\CaptureRequest;
-use Bambora\Request\CheckoutUrlRequest;
-use Bambora\Request\DeleteRequest;
+use Bambora\Request\CaptureTransactionRequest;
+use Bambora\Request\InitiateSessionsRequest;
+use Bambora\Request\DeleteTransactionRequest;
 use Bambora\Response\Api\AuthorizeApiResponse;
 use Bambora\Response\Api\BaseApiResponse;
 use Bambora\Response\Api\CaptureApiResponse;
@@ -46,10 +46,10 @@ class Client
     }
 
     /**
-     * @param \Bambora\Request\CheckoutUrlRequest $request
+     * @param \Bambora\Request\InitiateSessionsRequest $request
      * @return \Bambora\Response\Api\CheckoutUrlApiResponse
      */
-    public function getCheckoutUrl(CheckoutUrlRequest $request) : CheckoutUrlApiResponse
+    public function getCheckoutUrl(InitiateSessionsRequest $request) : CheckoutUrlApiResponse
     {
         /** @var CheckoutUrlApiResponse $response */
         $response = $this->request($request, CheckoutUrlApiResponse::class);
@@ -58,10 +58,10 @@ class Client
     }
 
     /**
-     * @param \Bambora\Request\CaptureRequest $request
+     * @param \Bambora\Request\CaptureTransactionRequest $request
      * @return \Bambora\Response\Api\CaptureApiResponse
      */
-    public function capture(CaptureRequest $request) : CaptureApiResponse
+    public function capture(CaptureTransactionRequest $request) : CaptureApiResponse
     {
         /** @var CaptureApiResponse $response */
         $response = $this->request($request, CaptureApiResponse::class);
@@ -70,10 +70,10 @@ class Client
     }
 
     /**
-     * @param \Bambora\Request\AuthorizeRequest $request
+     * @param \Bambora\Request\AuthorizeTransactionRequest $request
      * @return \Bambora\Response\Api\AuthorizeApiResponse
      */
-    public function authorize(AuthorizeRequest $request) : AuthorizeApiResponse
+    public function authorize(AuthorizeTransactionRequest $request) : AuthorizeApiResponse
     {
         /** @var AuthorizeApiResponse $response */
         $response = $this->request($request, AuthorizeApiResponse::class);
@@ -82,10 +82,10 @@ class Client
     }
 
     /**
-     * @param \Bambora\Request\DeleteRequest $request
+     * @param \Bambora\Request\DeleteTransactionRequest $request
      * @return \Bambora\Response\Api\DeleteApiResponse
      */
-    public function delete(DeleteRequest $request) : DeleteApiResponse
+    public function delete(DeleteTransactionRequest $request) : DeleteApiResponse
     {
         /** @var DeleteApiResponse $response */
         $response = $this->request($request, DeleteApiResponse::class);

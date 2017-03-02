@@ -3,7 +3,7 @@ namespace Bambora\Request;
 
 use Bambora\BamboraEndpoints;
 
-class CaptureRequest extends BaseRequest
+class CaptureTransactionRequest extends BaseRequest
 {
     /** @var  int */
     private $amount;
@@ -13,7 +13,7 @@ class CaptureRequest extends BaseRequest
 
     public function __construct(string $transactionId)
     {
-        $this->meta = new RequestMetaInformation("POST", BamboraEndpoints::capture($transactionId));
+        $this->meta = new RequestMetaInformation("POST", BamboraEndpoints::captureTransaction($transactionId));
     }
 
     /**
