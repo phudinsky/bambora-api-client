@@ -19,7 +19,6 @@ use Bambora\Response\ResponseFactory;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Validator\Validation;
 
 class Client
 {
@@ -45,7 +44,7 @@ class Client
         $this->apiKey = $apiKey;
 
         $this->httpClient = $this->createHttpClient();
-        $this->responseFactory = $this->createResponseFactory();
+        $this->responseFactory = new ResponseFactory();
         $this->requestSerializer = $this->createRequestSerializer();
     }
 
@@ -122,16 +121,6 @@ class Client
         $normalizedResponse = $this->requestSerializer->decode($rawResponse->getBody()->getContents(), 'json');
 
         return $this->responseFactory->createApiResponse($normalizedResponse, $responseClass);
-    }
-
-    /**
-     * @return ResponseFactory
-     */
-    protected function createResponseFactory() : ResponseFactory
-    {
-        $validator = new ResponseStructureValidator(Validation::createValidator());
-
-        return new ResponseFactory($validator);
     }
 
     /**

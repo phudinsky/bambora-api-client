@@ -6,6 +6,7 @@ use Bambora\Exception\InvalidResponseStructureException;
 use Bambora\Response\Api\BaseApiResponse;
 use Bambora\Response\Callback\BaseCallbackResponse;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validation;
 
 class ResponseFactory
 {
@@ -14,9 +15,9 @@ class ResponseFactory
      */
     private $validator;
 
-    public function __construct(ResponseStructureValidator $validator)
+    public function __construct()
     {
-        $this->validator = $validator;
+        $this->validator = new ResponseStructureValidator(Validation::createValidator());;
     }
 
     /**
