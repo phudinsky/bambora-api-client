@@ -1,15 +1,15 @@
 <?php
 namespace Bambora\Test;
 
-use Bambora\Request\AuthorizeRequest;
+use Bambora\Request\AuthorizeTransactionRequest;
 use PHPUnit\Framework\TestCase;
 
 class AuthorizeRequestTest extends TestCase
 {
     public function testSetAuthorize()
     {
-        /** @var AuthorizeRequest $class */
-        $class = $this->createPartialMock(AuthorizeRequest::class, []);
+        /** @var AuthorizeTransactionRequest $class */
+        $class = $this->createPartialMock(AuthorizeTransactionRequest::class, []);
 
         $authorizeStub = $this->createMock(AuthorizeRequest\Authorize::class);
 
