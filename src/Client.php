@@ -1,7 +1,7 @@
 <?php
 namespace Bambora;
 
-use Bambora\Exception\BamboraRequestException;
+use Bambora\Response\BaseResponse;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client as HttpClient;
 use Bambora\Request\AuthorizeTransactionRequest;
@@ -18,6 +18,7 @@ use Bambora\Response\ResponseFactory;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Bambora\Exception\BamboraRequestException;
 
 class Client
 {
@@ -38,13 +39,24 @@ class Client
      */
     private $apiKey;
 
-    public function __construct(string $apiKey)
+    /** @var RequestMiddlewareInterface[]  */
+    private $middlewares = [];
+
+    public function __construct(string $apiKey, array $httpClientOptions = [])
     {
         $this->apiKey = $apiKey;
 
-        $this->httpClient = $this->createHttpClient();
+        $this->httpClient = $this->createHttpClient($httpClientOptions);
         $this->responseFactory = new ResponseFactory();
         $this->requestSerializer = $this->createRequestSerializer();
+    }
+
+    /**
+     * @param RequestMiddlewareInterface $middleware
+     */
+    public function addRequestMiddleware(RequestMiddlewareInterface $middleware)
+    {
+        $this->middlewares[] = $middleware;
     }
 
     /**
@@ -104,6 +116,7 @@ class Client
     protected function request(BaseRequest $request, string $responseClass) : BaseApiResponse
     {
         $normalizedRequest = $this->requestSerializer->normalize($request);
+        $this->runOnRequest($request, $normalizedRequest);
 
         try {
             $rawResponse = $this->httpClient->request(
@@ -114,18 +127,67 @@ class Client
                 ]
             );
         } catch (RequestException $e) {
-            throw new BamboraRequestException($e->getMessage());
+            $normalizedResponse = $e->hasResponse()
+                ? $this->requestSerializer->decode($e->getResponse()->getBody()->getContents(), 'json')
+                : null;
+            $exception = new BamboraRequestException($e->getMessage(), $normalizedRequest, $normalizedResponse);
+            $this->runOnException($request, $exception);
+            throw $exception;
         }
 
         $normalizedResponse = $this->requestSerializer->decode($rawResponse->getBody()->getContents(), 'json');
+        $response = $this->responseFactory->createApiResponse($normalizedResponse, $responseClass);
+        $this->runOnResponse($response, $normalizedResponse);
 
-        return $this->responseFactory->createApiResponse($normalizedResponse, $responseClass);
+        return $response;
+    }
+
+    /**
+     * @param BaseRequest $request
+     * @param array $normalizedRequest
+     */
+    private function runOnRequest(BaseRequest $request, array $normalizedRequest)
+    {
+        array_walk(
+            $this->middlewares,
+            function(RequestMiddlewareInterface $middleware) use ($request, $normalizedRequest) {
+                $middleware->onRequest($request, $normalizedRequest);
+            }
+        );
+    }
+
+    /**
+     * @param BaseRequest $request
+     * @param BamboraRequestException $exception
+     */
+    private function runOnException(BaseRequest $request, BamboraRequestException $exception)
+    {
+        array_walk(
+            $this->middlewares,
+            function(RequestMiddlewareInterface $middleware) use ($request, $exception) {
+                $middleware->onException($request, $exception);
+            }
+        );
+    }
+
+    /**
+     * @param BaseResponse $response
+     * @param array $normalizedResponse
+     */
+    private function runOnResponse(BaseResponse $response, array $normalizedResponse)
+    {
+        array_walk(
+            $this->middlewares,
+            function(RequestMiddlewareInterface $middleware) use ($response, $normalizedResponse) {
+                $middleware->onResponse($response, $normalizedResponse);
+            }
+        );
     }
 
     /**
      * @return Serializer
      */
-    protected function createRequestSerializer() : Serializer
+    private function createRequestSerializer() : Serializer
     {
         $normalizer = new PropertyNormalizer();
         $normalizer->setIgnoredAttributes(['meta']);
@@ -134,16 +196,22 @@ class Client
     }
 
     /**
+     * @param array $httpClientOptions
      * @return HttpClient
      */
-    protected function createHttpClient() : HttpClient
+    private function createHttpClient(array $httpClientOptions) : HttpClient
     {
-        return new HttpClient([
-            'timeout' => 30,
-            'headers' => [
-                'Accept' => 'application/json',
-                'Authorization' => sprintf('Basic %s', $this->apiKey)
-            ]
-        ]);
+        return new HttpClient(
+            array_merge(
+                [
+                    'timeout' => 30,
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Authorization' => sprintf('Basic %s', $this->apiKey)
+                    ]
+                ],
+                $httpClientOptions
+            )
+        );
     }
 }

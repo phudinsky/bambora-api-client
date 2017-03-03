@@ -12,7 +12,7 @@ final class BamboraEndpoints
      */
     public static function initiateSession() : string
     {
-        return sprintf('%s/sessions', self::CHECKOUT_ENDPOINT);
+        return sprintf('%s/checkout', self::CHECKOUT_ENDPOINT);
     }
 
     /**
